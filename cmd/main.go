@@ -18,6 +18,33 @@ type Analysis struct {
 	Detail        string `json:"detail,omitempty"`
 }
 
+type Vulnerability struct {
+	BomRef string `json:"bom-ref"`
+	ID     string `json:"id"`
+	Source struct {
+		Name string `json:"name"`
+		URL  string `json:"url"`
+	} `json:"source"`
+	Ratings []struct {
+		Source struct {
+			Name string `json:"name"`
+			URL  string `json:"url"`
+		} `json:"source"`
+		Score    float64 `json:"score"`
+		Severity string  `json:"severity"`
+		Method   string  `json:"method"`
+		Vector   string  `json:"vector"`
+	} `json:"ratings"`
+	Cwes        []int     `json:"cwes,omitempty"`
+	Description string    `json:"description"`
+	Published   time.Time `json:"published"`
+	Updated     time.Time `json:"updated"`
+	Analysis    Analysis  `json:"analysis,omitempty"`
+	Affects     []struct {
+		Ref string `json:"ref"`
+	} `json:"affects"`
+}
+
 type Vex struct {
 	BomFormat    string `json:"bomFormat"`
 	SpecVersion  string `json:"specVersion"`
@@ -51,32 +78,7 @@ type Vex struct {
 		Ref       string `json:"ref"`
 		DependsOn []any  `json:"dependsOn"`
 	} `json:"dependencies,omitempty"`
-	Vulnerabilities []struct {
-		BomRef string `json:"bom-ref"`
-		ID     string `json:"id"`
-		Source struct {
-			Name string `json:"name"`
-			URL  string `json:"url"`
-		} `json:"source"`
-		Ratings []struct {
-			Source struct {
-				Name string `json:"name"`
-				URL  string `json:"url"`
-			} `json:"source"`
-			Score    float64 `json:"score"`
-			Severity string  `json:"severity"`
-			Method   string  `json:"method"`
-			Vector   string  `json:"vector"`
-		} `json:"ratings"`
-		Cwes        []int     `json:"cwes,omitempty"`
-		Description string    `json:"description"`
-		Published   time.Time `json:"published"`
-		Updated     time.Time `json:"updated"`
-		Analysis    Analysis  `json:"analysis,omitempty"`
-		Affects     []struct {
-			Ref string `json:"ref"`
-		} `json:"affects"`
-	} `json:"vulnerabilities"`
+	Vulnerabilities []Vulnerability `json:"vulnerabilities"`
 }
 
 func main() {
@@ -90,13 +92,13 @@ func main() {
 	valid := validate(keyPtr, statePtr, justificationPtr, detailsPtr)
 
 	if valid {
-		vex := unmarshal("C:\\Users\\WSCHBFEJ\\Downloads\\vex.json")
-		bom := unmarshal("bom.json")
+		vex := unmarshal("/home/fedora/Downloads/vex.json")
+		bom := unmarshal("/home/fedora/Downloads/bom.json")
 
 		bomRef := getBomRef(bom, keyPtr)
 		fmt.Printf("%s(\x1b[%dm%s\x1b[0m)\n", bomRef, 34, *keyPtr)
 
-		setAnalysis(vex, bomRef, keyPtr, statePtr, justificationPtr, detailsPtr)
+		vex=setAnalysis(vex, bomRef, keyPtr, statePtr, justificationPtr, detailsPtr)
 
 		write(vex)
 	}
@@ -126,6 +128,7 @@ func validate(keyPtr, statePtr, justificationPtr, detailsPtr *string) bool {
 
 	if !valid {
 		fmt.Println("Usage:")
+		fmt.Println("\tkey:\t", "any")
 		b, _ := json.Marshal(state)
 		fmt.Printf("\tstate:   \t%v\n", string(b))
 		b, _ = json.Marshal(justification)
@@ -153,15 +156,16 @@ func getBomRef(bom Vex, keyPtr *string) string {
 	components := bom.Components
 	bomRef := ""
 	for _, component := range components {
-		if strings.ToLower(component.Name) == strings.ToLower(*keyPtr) {
+		if strings.EqualFold(component.Name,*keyPtr) {
 			bomRef = component.BomRef
 		}
 	}
 	return bomRef
 }
 
-func setAnalysis(vex Vex, bomRef string, keyPtr *string, statePtr *string, justiPtr *string, detaiPtr *string) {
-	count := 0
+func setAnalysis(vex Vex, bomRef string, keyPtr *string, statePtr *string, justiPtr *string, detaiPtr *string) Vex{
+	vulnerabilities := make([]Vulnerability, 0)
+
 	if len(bomRef) > 0 {
 		for idx, vul := range vex.Vulnerabilities {
 			desc := vul.Description
@@ -169,11 +173,15 @@ func setAnalysis(vex Vex, bomRef string, keyPtr *string, statePtr *string, justi
 				vex.Vulnerabilities[idx].Analysis.State = *statePtr
 				vex.Vulnerabilities[idx].Analysis.Justification = *justiPtr
 				vex.Vulnerabilities[idx].Analysis.Detail = *detaiPtr
-				count++
+
+				vulnerabilities = append(vulnerabilities, vex.Vulnerabilities[idx])
 			}
 		}
 	}
-	fmt.Printf("count: %d\n", count)
+	vex.Vulnerabilities = vulnerabilities
+	fmt.Printf("count: %d\n", len(vex.Vulnerabilities))
+
+	return vex
 }
 
 func write(vex Vex) {
@@ -181,7 +189,7 @@ func write(vex Vex) {
 	if err != nil {
 		fmt.Println(err)
 	}
-	err = os.WriteFile("vex-updated.json", content, 0644)
+	err = os.WriteFile("/home/fedora/Downloads/vex-updated.json", content, 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
