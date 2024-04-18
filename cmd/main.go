@@ -98,7 +98,7 @@ func main() {
 		bomRef := getBomRef(bom, keyPtr)
 		fmt.Printf("%s(\x1b[%dm%s\x1b[0m)\n", bomRef, 34, *keyPtr)
 
-		vex=setAnalysis(vex, bomRef, keyPtr, statePtr, justificationPtr, detailsPtr)
+		vex = setAnalysis(vex, bomRef, keyPtr, statePtr, justificationPtr, detailsPtr)
 
 		write(vex)
 	}
@@ -149,6 +149,10 @@ func unmarshal(file string) Vex {
 
 	var vex Vex
 	err = json.Unmarshal(byteValue, &vex)
+	if err != nil {
+		fmt.Println(err)
+	}
+
 	return vex
 }
 
@@ -156,14 +160,14 @@ func getBomRef(bom Vex, keyPtr *string) string {
 	components := bom.Components
 	bomRef := ""
 	for _, component := range components {
-		if strings.EqualFold(component.Name,*keyPtr) {
+		if strings.EqualFold(component.Name, *keyPtr) {
 			bomRef = component.BomRef
 		}
 	}
 	return bomRef
 }
 
-func setAnalysis(vex Vex, bomRef string, keyPtr *string, statePtr *string, justiPtr *string, detaiPtr *string) Vex{
+func setAnalysis(vex Vex, bomRef string, keyPtr *string, statePtr *string, justiPtr *string, detaiPtr *string) Vex {
 	vulnerabilities := make([]Vulnerability, 0)
 
 	if len(bomRef) > 0 {
