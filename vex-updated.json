@@ -1,1 +1,224 @@
-{"bomFormat":"","specVersion":"","serialNumber":"","version":0,"metadata":{"timestamp":"0001-01-01T00:00:00Z","tools":null,"component":{"name":"","version":"","type":"","bom-ref":""}},"vulnerabilities":null}
+{
+    "bomFormat": "CycloneDX",
+    "specVersion": "1.5",
+    "serialNumber": "urn:uuid:60cb3e54-f48a-4329-bd02-28c251f01770",
+    "version": 1,
+    "metadata": {
+        "timestamp": "2024-04-18T13:41:06Z",
+        "tools": [
+            {
+                "vendor": "OWASP",
+                "name": "Dependency-Track",
+                "version": "4.10.1"
+            }
+        ],
+        "component": {
+            "name": "tool",
+            "version": "1",
+            "type": "application",
+            "bom-ref": "923e19be-0680-479a-9881-7a731df672c3"
+        }
+    },
+    "vulnerabilities": [
+        {
+            "bom-ref": "9a2fce2f-0b34-45fe-9ad4-6bea86aca3c9",
+            "id": "CVE-2023-6992",
+            "source": {
+                "name": "NVD",
+                "url": "https://nvd.nist.gov/"
+            },
+            "ratings": [
+                {
+                    "source": {
+                        "name": "NVD",
+                        "url": "https://nvd.nist.gov/"
+                    },
+                    "score": 5.5,
+                    "severity": "medium",
+                    "method": "CVSSv3",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+                }
+            ],
+            "cwes": [
+                787
+            ],
+            "description": "Cloudflare version of zlib library was found to be vulnerable to memory corruption issues affecting the deflation algorithm implementation (deflate.c). The issues resulted from improper input validation and heap-based buffer overflow. A local attacker could exploit the problem during compression using a crafted malicious file potentially leading to denial of service of the software. Patches: The issue has been patched in commit 8352d10 https://github.com/cloudflare/zlib/commit/8352d108c05db1bdc5ac3bdf834dad641694c13c . The upstream repository is not affected.",
+            "published": "2024-01-04T12:15:00Z",
+            "updated": "2024-01-10T01:14:00Z",
+            "analysis": {
+                "state": "in_triage",
+                "justification": "code_not_reachable",
+                "detail": "details abc \u0026 123"
+            },
+            "affects": [
+                {
+                    "ref": "923e19be-0680-479a-9881-7a731df672c3"
+                }
+            ]
+        },
+        {
+            "bom-ref": "4c23c825-db7c-485d-a279-c057ff50265c",
+            "id": "CVE-2017-18258",
+            "source": {
+                "name": "NVD",
+                "url": "https://nvd.nist.gov/"
+            },
+            "ratings": [
+                {
+                    "source": {
+                        "name": "NVD",
+                        "url": "https://nvd.nist.gov/"
+                    },
+                    "score": 4.3,
+                    "severity": "medium",
+                    "method": "CVSSv2",
+                    "vector": "(AV:N/AC:M/Au:N/C:N/I:N/A:P)"
+                },
+                {
+                    "source": {
+                        "name": "NVD",
+                        "url": "https://nvd.nist.gov/"
+                    },
+                    "score": 6.5,
+                    "severity": "medium",
+                    "method": "CVSSv3",
+                    "vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H"
+                }
+            ],
+            "cwes": [
+                770
+            ],
+            "description": "The xz_head function in xzlib.c in libxml2 before 2.9.6 allows remote attackers to cause a denial of service (memory consumption) via a crafted LZMA file, because the decoder functionality does not restrict memory usage to what is required for a legitimate file.",
+            "published": "2018-04-08T17:29:00Z",
+            "updated": "2020-09-10T01:15:00Z",
+            "analysis": {
+                "state": "in_triage",
+                "justification": "code_not_reachable",
+                "detail": "details abc \u0026 123"
+            },
+            "affects": [
+                {
+                    "ref": "923e19be-0680-479a-9881-7a731df672c3"
+                }
+            ]
+        },
+        {
+            "bom-ref": "9a2fce2f-0b34-45fe-9ad4-6bea86aca3c9",
+            "id": "CVE-2023-6992",
+            "source": {
+                "name": "NVD",
+                "url": "https://nvd.nist.gov/"
+            },
+            "ratings": [
+                {
+                    "source": {
+                        "name": "NVD",
+                        "url": "https://nvd.nist.gov/"
+                    },
+                    "score": 5.5,
+                    "severity": "medium",
+                    "method": "CVSSv3",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+                }
+            ],
+            "cwes": [
+                787
+            ],
+            "description": "Cloudflare version of zlib library was found to be vulnerable to memory corruption issues affecting the deflation algorithm implementation (deflate.c). The issues resulted from improper input validation and heap-based buffer overflow. A local attacker could exploit the problem during compression using a crafted malicious file potentially leading to denial of service of the software. Patches: The issue has been patched in commit 8352d10 https://github.com/cloudflare/zlib/commit/8352d108c05db1bdc5ac3bdf834dad641694c13c . The upstream repository is not affected.",
+            "published": "2024-01-04T12:15:00Z",
+            "updated": "2024-01-10T01:14:00Z",
+            "analysis": {
+                "state": "in_triage",
+                "justification": "code_not_reachable",
+                "detail": "details abc \u0026 123"
+            },
+            "affects": [
+                {
+                    "ref": "923e19be-0680-479a-9881-7a731df672c3"
+                }
+            ]
+        },
+        {
+            "bom-ref": "9a2fce2f-0b34-45fe-9ad4-6bea86aca3c9",
+            "id": "CVE-2023-6992",
+            "source": {
+                "name": "NVD",
+                "url": "https://nvd.nist.gov/"
+            },
+            "ratings": [
+                {
+                    "source": {
+                        "name": "NVD",
+                        "url": "https://nvd.nist.gov/"
+                    },
+                    "score": 5.5,
+                    "severity": "medium",
+                    "method": "CVSSv3",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:N/I:N/A:H"
+                }
+            ],
+            "cwes": [
+                787
+            ],
+            "description": "Cloudflare version of zlib library was found to be vulnerable to memory corruption issues affecting the deflation algorithm implementation (deflate.c). The issues resulted from improper input validation and heap-based buffer overflow. A local attacker could exploit the problem during compression using a crafted malicious file potentially leading to denial of service of the software. Patches: The issue has been patched in commit 8352d10 https://github.com/cloudflare/zlib/commit/8352d108c05db1bdc5ac3bdf834dad641694c13c . The upstream repository is not affected.",
+            "published": "2024-01-04T12:15:00Z",
+            "updated": "2024-01-10T01:14:00Z",
+            "analysis": {
+                "state": "in_triage",
+                "justification": "code_not_reachable",
+                "detail": "details abc \u0026 123"
+            },
+            "affects": [
+                {
+                    "ref": "923e19be-0680-479a-9881-7a731df672c3"
+                }
+            ]
+        },
+        {
+            "bom-ref": "8fca0c48-6973-4a18-8718-2daa7748de12",
+            "id": "CVE-2016-10012",
+            "source": {
+                "name": "NVD",
+                "url": "https://nvd.nist.gov/"
+            },
+            "ratings": [
+                {
+                    "source": {
+                        "name": "NVD",
+                        "url": "https://nvd.nist.gov/"
+                    },
+                    "score": 7.2,
+                    "severity": "high",
+                    "method": "CVSSv2",
+                    "vector": "(AV:L/AC:L/Au:N/C:C/I:C/A:C)"
+                },
+                {
+                    "source": {
+                        "name": "NVD",
+                        "url": "https://nvd.nist.gov/"
+                    },
+                    "score": 7.8,
+                    "severity": "high",
+                    "method": "CVSSv3",
+                    "vector": "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H"
+                }
+            ],
+            "cwes": [
+                119
+            ],
+            "description": "The shared memory manager (associated with pre-authentication compression) in sshd in OpenSSH before 7.4 does not ensure that a bounds check is enforced by all compilers, which might allows local users to gain privileges by leveraging access to a sandboxed privilege-separation process, related to the m_zback and m_zlib data structures.",
+            "published": "2017-01-05T02:59:00Z",
+            "updated": "2023-11-07T02:29:00Z",
+            "analysis": {
+                "state": "in_triage",
+                "justification": "code_not_reachable",
+                "detail": "details abc \u0026 123"
+            },
+            "affects": [
+                {
+                    "ref": "923e19be-0680-479a-9881-7a731df672c3"
+                }
+            ]
+        }
+    ]
+}

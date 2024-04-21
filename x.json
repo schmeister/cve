@@ -1,0 +1,28 @@
+{
+    "analysisState": "NOT_AFFECTED",
+    "analysisJustification": "PROTECTED_AT_PERIMETER",
+    "analysisDetails": "Not available to general public - in closed area",
+    "analysisComments": [
+        {
+            "timestamp": 1713447707870,
+            "comment": "Analysis: NOT_SET → NOT_AFFECTED",
+            "commenter": "CycloneDX VEX"
+        },
+        {
+            "timestamp": 1713447707872,
+            "comment": "Justification: NOT_SET → CODE_NOT_PRESENT",
+            "commenter": "CycloneDX VEX"
+        },
+        {
+            "timestamp": 1713447707872,
+            "comment": "Details: Not available to general public - in closed area",
+            "commenter": "CycloneDX VEX"
+        },
+        {
+            "timestamp": 1713447938989,
+            "comment": "Justification: CODE_NOT_PRESENT → PROTECTED_AT_PERIMETER",
+            "commenter": "CycloneDX VEX"
+        }
+    ],
+    "isSuppressed": true
+}
