@@ -2,7 +2,6 @@ package components
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -107,7 +106,6 @@ func GetComponent(name string, components Components) []string {
 	for _, y := range components {
 		if strings.EqualFold(y.Name, name) {
 			uuids = append(uuids, y.UUID)
-			fmt.Println(y.UUID, y.Name, y.Version)
 		}
 	}
 	return uuids

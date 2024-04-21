@@ -52,17 +52,23 @@ func main() {
 
 		vexFile = setAnalysis(vexFile, bomRef, keyPtr, statePtr, justificationPtr, detailsPtr)
 		write(vexFile)
-		fmt.Println("written")
 
 		//theBom := rest.GetBOM("923e19be-0680-479a-9881-7a731df672c3")
 		//comps := bom.GetComponents(theBom, keyPtr)
 		//fmt.Println(comps)
-	}
-	comps := components.GetComponents("923e19be-0680-479a-9881-7a731df672c3")
-	uuid := components.GetComponent(*keyPtr, comps)
-	for _, y := range uuid {
-		vuls := vulnerability.GetVulnerabilities(y)
-		vulnerability.ShowVulnerabilities(vuls)
+
+		comps := components.GetComponents("923e19be-0680-479a-9881-7a731df672c3")
+		for _, y := range comps {
+			if strings.EqualFold(y.Name, *keyPtr) {
+				fmt.Printf("%-14s %s\n", y.Name, y.UUID)
+			}
+		}
+		uuid := components.GetComponent(*keyPtr, comps)
+		for _, y := range uuid {
+			vuls := vulnerability.GetVulnerabilities(y)
+			vulnerability.ShowVulnerabilities(vuls)
+		}
+
 	}
 }
 
