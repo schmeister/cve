@@ -64,13 +64,13 @@ func SaveAnalysis(uri string, apikey string, putAnalysis PutAnalysis) {
 
 	newG := GetAnalysis{}
 	json.Unmarshal(responseBytes, &newG)
-
-//	j, err := json.MarshalIndent(newG, "", " ")
-//	if err != nil {
-//		log.Fatalf("error json.MarshalIndent: %v", err)
-//	}
-//	log.Printf("%v\n", string(responseBytes))
-//	log.Printf("%v\n", string(j))
+/*
+	j, err := json.MarshalIndent(newG, "", " ")
+	if err != nil {
+		log.Fatalf("error json.MarshalIndent: %v", err)
+	}
+	log.Printf("%v\n", string(j))
+*/
 }
 
 func RequestAnalysis(uri string, apikey string, analysis PutAnalysis) {

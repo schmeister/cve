@@ -2,57 +2,73 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	"github.com/schmeister/cve/internal/analysis"
 	"github.com/schmeister/cve/internal/components"
+	"github.com/schmeister/cve/internal/constants"
 	"github.com/schmeister/cve/internal/vulnerability"
+	"github.com/schmeister/cve/validate"
 )
+
+// go run cmd/main.go -key="berkeley_db" -analysisState="NOT_AFFECTED" -analysisJustification="PROTECTED_AT_PERIMETER" -comment="my comment" -analysisDetails="Wednesday berkeley_db - 2" -suppressed=true
 
 var URI = "http://localhost:8081"
 var API_KEY = "odt_9SzIIWOMDrMm8IYwjVqZX8IBW90ppCCU"
-var PROJECT_ID = "923e19be-0680-479a-9881-7a731df672c3"
-var COMPONENT = "b2e85fce-fb7b-4c62-95c4-3e2d729993be" // zlib
-var VULNERABILITY = "9a2fce2f-0b34-45fe-9ad4-6bea86aca3c9" //CVE-2023-6992 (NVD)
+var PROJECT_ID = "882a7f3c-6791-4f84-9fba-d3aafa40c037"
+var COMPONENT = "d37ef235-dc99-4a3b-9937-e9e4a6615e9f"     // berkley_db
+var VULNERABILITY = "d3ad8c72-1f98-4614-b1c4-745da7a88bc7" //CVE-2019-2708 (NVD)
 
 func main() {
 	log.SetFlags(log.Lshortfile)
 
 	uriPtr := flag.String("uri", URI, "URI")
 	apiKeyPtr := flag.String("apikey", API_KEY, "X-Api-Key")
-	keyPtr := flag.String("key", "", "Label to be searched")
+	keyPtr := flag.String("key", "firefox", "Label to be searched")
 
 	suppressedPtr := flag.Bool("suppressed", false, "Suppress the CVE")
-	analysisStatePtr := flag.String("analysisState", "NOT_AFFECTED", "new analysis state")
-	analysisJustificationPtr := flag.String("analysisJustification", "NOT_SET", "new analysis justification")
+	analysisStatePtr := flag.String("analysisState", "NOT_AFFECTED", fmt.Sprintln(constants.States))
+	analysisJustificationPtr := flag.String("analysisJustification", "NOT_SET", fmt.Sprintln(constants.Justifications))
 	projectPtr := flag.String("project", PROJECT_ID, "")
-	commentPtr := flag.String("comment", "I have no comment.", "comments")
-	analysisDetailsPtr := flag.String("analysisDetails", "There are no details.", "Details")
+	commentPtr := flag.String("comment", "no comment", "comments")
+	analysisDetailsPtr := flag.String("analysisDetails", "no details", "Details")
 
 	flag.Parse()
-	valid := true
 
-	if valid {
+	valid := validate.ValidateFlags(analysisStatePtr, analysisJustificationPtr)
+	if !valid {
+		flag.PrintDefaults()
+	} else {
 		comps := components.GetComponents(*uriPtr, *apiKeyPtr, *projectPtr)
 		uuids := components.GetComponent(*keyPtr, *apiKeyPtr, comps)
-		log.Printf("# Components: %d\n", len(uuids))
+		log.Printf("# Components: %d %s\n", len(uuids), uuids)
 		for _, uuid := range uuids {
-			vuls := vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, uuid)
-			log.Printf("# Vulnerabilities: %d\n", len(vuls))
-			for _, y := range vuls {
-				log.Printf("%-14s %s\n", y.VulnID, y.UUID)
-				analyzed := analysis.PutAnalysis{
-					Suppressed:            *suppressedPtr,
-					AnalysisState:         *analysisStatePtr,
-					AnalysisJustification: *analysisJustificationPtr,
-					Project:               *projectPtr,
-					Vulnerability:         y.UUID,
-					Component:             uuid,
-					IsSuppressed:          false,
-					Comment:               *commentPtr,
-					AnalysisDetails:       *analysisDetailsPtr,
+			page := 1
+			vuls := vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, uuid, page)
+			for len(vuls) > 0 {
+				log.Printf("# Vulnerabilities: %d\n", len(vuls))
+				for idx, y := range vuls {
+					log.Printf("%3d %-14s %s\n", idx+1, y.VulnID, y.UUID)
+					if true {
+						an := analysis.PutAnalysis{
+							Project:       *projectPtr,
+							Component:     uuid,
+							Vulnerability: y.UUID,
+							//AnalysisState:         *analysisStatePtr,
+							//AnalysisJustification: *analysisJustificationPtr,
+							//AnalysisResponse:      "CAN_NOT_FIX",
+							Suppressed:      *suppressedPtr,
+							IsSuppressed:    false,
+							Comment:         *commentPtr,
+							AnalysisDetails: *analysisDetailsPtr,
+						}
+						analysis.SaveAnalysis(*uriPtr, *apiKeyPtr, an)
+					}
 				}
-				analysis.SaveAnalysis(*uriPtr, *apiKeyPtr, analyzed)
+
+				page++
+				vuls = vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, uuid, page)
 			}
 		}
 	}
