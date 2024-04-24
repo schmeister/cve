@@ -64,16 +64,7 @@ func SaveAnalysis(uri string, apikey string, putAnalysis PutAnalysis) {
 
 	newG := GetAnalysis{}
 	json.Unmarshal(responseBytes, &newG)
-/*
-	j, err := json.MarshalIndent(newG, "", " ")
-	if err != nil {
-		log.Fatalf("error json.MarshalIndent: %v", err)
-	}
-	log.Printf("%v\n", string(j))
-*/
 }
-
-
 
 func SaveAnalysisString(uri string, apikey string, putAnalysis string) {
 	url := uri + "/api/v1/analysis"
