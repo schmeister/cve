@@ -9,8 +9,8 @@ import (
 	"github.com/schmeister/cve/internal/bom"
 )
 
-func GetBOM(project string) bom.BOM {
-	url := "http://localhost:8081/api/v1/bom/cyclonedx/project/923e19be-0680-479a-9881-7a731df672c3?download=false"
+func GetBOM(uri string, apiKey string, project string) bom.BOM {
+	url := uri + "/api/v1/bom/cyclonedx/project/" + project + "?download=false"
 
 	req, err := http.NewRequest(
 		http.MethodGet,
@@ -22,7 +22,7 @@ func GetBOM(project string) bom.BOM {
 	}
 
 	req.Header.Add("Accept", "application/vnd.cyclonedx+xml")
-	req.Header.Add("X-Api-Key", "odt_9SzIIWOMDrMm8IYwjVqZX8IBW90ppCCU")
+	req.Header.Add("X-Api-Key", apiKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -39,8 +39,8 @@ func GetBOM(project string) bom.BOM {
 
 	return theBom
 }
-func GetVEX(project string) bom.BOM {
-	url := "http://localhost:8081/api/v1/bom/cyclonedx/project/923e19be-0680-479a-9881-7a731df672c3?download=false"
+func GetVEX(uri string, apiKey string, project string) bom.BOM {
+	url := uri + "/api/v1/bom/cyclonedx/project/" + project + "?download=false"
 
 	req, err := http.NewRequest(
 		http.MethodGet,
@@ -52,7 +52,7 @@ func GetVEX(project string) bom.BOM {
 	}
 
 	req.Header.Add("Accept", "application/vnd.cyclonedx+xml")
-	req.Header.Add("X-Api-Key", "odt_9SzIIWOMDrMm8IYwjVqZX8IBW90ppCCU")
+	req.Header.Add("X-Api-Key", apiKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
