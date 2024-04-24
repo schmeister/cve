@@ -22,7 +22,7 @@ type GetAnalysis struct {
 }
 
 type PutAnalysis struct {
-	Suppressed            bool   `json:"suppressed,omitempty"`
+	Suppressed            bool   `json:"suppressed"`
 	AnalysisState         string `json:"analysisState,omitempty"`
 	AnalysisJustification string `json:"analysisJustification,omitempty"`
 	Project               string `json:"project"`
@@ -72,6 +72,48 @@ func SaveAnalysis(uri string, apikey string, putAnalysis PutAnalysis) {
 	log.Printf("%v\n", string(j))
 */
 }
+
+
+
+func SaveAnalysisString(uri string, apikey string, putAnalysis string) {
+	url := uri + "/api/v1/analysis"
+
+	data := []byte(putAnalysis)
+
+	req, err := http.NewRequest(
+		http.MethodPut,
+		url,
+		bytes.NewBuffer(data),
+	)
+	if err != nil {
+		log.Fatalf("error creating HTTP request: %v", err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("X-Api-Key", "odt_9SzIIWOMDrMm8IYwjVqZX8IBW90ppCCU")
+	req.Header.Add("content-type", "application/json")
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalf("error sending HTTP request: %v", err)
+	}
+
+	responseBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatalf("error reading HTTP response body: %v", err)
+	}
+
+	newG := GetAnalysis{}
+	json.Unmarshal(responseBytes, &newG)
+
+	j, err := json.MarshalIndent(newG, "", " ")
+	if err != nil {
+		log.Fatalf("error json.MarshalIndent: %v", err)
+	}
+	log.Printf("%v\n", string(j))
+
+}
+
 
 func RequestAnalysis(uri string, apikey string, analysis PutAnalysis) {
 	url := uri + "/api/v1/analysis?" +

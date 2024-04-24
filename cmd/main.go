@@ -52,16 +52,16 @@ func main() {
 					log.Printf("%3d %-14s %s\n", idx+1, y.VulnID, y.UUID)
 					if true {
 						an := analysis.PutAnalysis{
-							Project:       *projectPtr,
-							Component:     uuid,
-							Vulnerability: y.UUID,
-							//AnalysisState:         *analysisStatePtr,
-							//AnalysisJustification: *analysisJustificationPtr,
-							//AnalysisResponse:      "CAN_NOT_FIX",
-							Suppressed:      *suppressedPtr,
-							IsSuppressed:    false,
-							Comment:         *commentPtr,
-							AnalysisDetails: *analysisDetailsPtr,
+							Project:               *projectPtr,
+							Component:             uuid,
+							Vulnerability:         y.UUID,
+							AnalysisState:         *analysisStatePtr,
+							AnalysisJustification: *analysisJustificationPtr,
+							AnalysisResponse:      "CAN_NOT_FIX",
+							Suppressed:            *suppressedPtr,
+							IsSuppressed:          false,
+							Comment:               *commentPtr,
+							AnalysisDetails:       *analysisDetailsPtr,
 						}
 						analysis.SaveAnalysis(*uriPtr, *apiKeyPtr, an)
 					}
