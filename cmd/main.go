@@ -8,6 +8,7 @@ import (
 	"github.com/schmeister/cve/internal/analysis"
 	"github.com/schmeister/cve/internal/components"
 	"github.com/schmeister/cve/internal/constants"
+	"github.com/schmeister/cve/internal/project"
 	"github.com/schmeister/cve/internal/vulnerability"
 	"github.com/schmeister/cve/validate"
 )
@@ -34,18 +35,33 @@ func main() {
 	commentPtr := flag.String("comment", "no comment", "comments")
 	analysisDetailsPtr := flag.String("analysisDetails", "no details", "Details")
 
+	lpPtr := flag.Bool("listP", false, "List projects")
+	lcPtr := flag.Bool("listC", false, "List components for project")
+	lvPtr := flag.Bool("listV", false, "List vulnerabilities for project")
+
 	flag.Parse()
 
 	valid := validate.ValidateFlags(analysisStatePtr, analysisJustificationPtr)
 	if !valid {
 		flag.PrintDefaults()
+	} else if *lpPtr {
+		projects := project.GetProjects(*uriPtr, *apiKeyPtr)
+		projects.ListProjects()
+	} else if *lcPtr {
+		components := components.GetComponents(*uriPtr, *apiKeyPtr, *projectPtr)
+		components.ListComponents()
+	} else if *lvPtr {
+		vulnerabilities := vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "project", *projectPtr, 1)
+		vulnerabilities.ListVulnerabilities()
+//		vulnerabilities = vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "component", *componentPtr, 1)
+//		vulnerabilities.ListVulnerabilities()
 	} else {
 		comps := components.GetComponents(*uriPtr, *apiKeyPtr, *projectPtr)
 		uuids := components.GetComponent(*keyPtr, *apiKeyPtr, comps)
 		log.Printf("# Components: %d %s\n", len(uuids), uuids)
 		for _, uuid := range uuids {
 			page := 1
-			vuls := vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, uuid, page)
+			vuls := vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "component", uuid, page)
 			for len(vuls) > 0 {
 				log.Printf("# Vulnerabilities: %d\n", len(vuls))
 				for idx, y := range vuls {
@@ -68,7 +84,7 @@ func main() {
 				}
 
 				page++
-				vuls = vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, uuid, page)
+				vuls = vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "component", uuid, page)
 			}
 		}
 	}

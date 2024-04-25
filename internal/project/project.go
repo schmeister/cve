@@ -1,35 +1,22 @@
-package components
+package project
 
 import (
 	"encoding/json"
 	"io"
 	"log"
 	"net/http"
-	"strings"
 )
 
-type Components []struct {
-	Name               string `json:"name"`
-	Classifier         string `json:"classifier"`
-	DirectDependencies string `json:"directDependencies,omitempty"`
-	ExternalReferences []struct {
-		Type    string `json:"type"`
-		URL     string `json:"url"`
-		Comment string `json:"comment"`
-	} `json:"externalReferences,omitempty"`
-	Project struct {
-		Name                   string `json:"name"`
-		Version                string `json:"version"`
-		Classifier             string `json:"classifier"`
-		DirectDependencies     string `json:"directDependencies"`
-		UUID                   string `json:"uuid"`
-		LastBomImport          int64  `json:"lastBomImport"`
-		LastBomImportFormat    string `json:"lastBomImportFormat"`
-		LastInheritedRiskScore int    `json:"lastInheritedRiskScore"`
-		Active                 bool   `json:"active"`
-	} `json:"project"`
-	LastInheritedRiskScore int    `json:"lastInheritedRiskScore"`
+type Projects []struct {
+	Name                   string `json:"name"`
+	Version                string `json:"version"`
+	Classifier             string `json:"classifier"`
+	DirectDependencies     string `json:"directDependencies"`
 	UUID                   string `json:"uuid"`
+	LastBomImport          int64  `json:"lastBomImport"`
+	LastBomImportFormat    string `json:"lastBomImportFormat"`
+	LastInheritedRiskScore int    `json:"lastInheritedRiskScore"`
+	Active                 bool   `json:"active"`
 	Metrics                struct {
 		Critical                             int   `json:"critical"`
 		High                                 int   `json:"high"`
@@ -37,6 +24,8 @@ type Components []struct {
 		Low                                  int   `json:"low"`
 		Unassigned                           int   `json:"unassigned"`
 		Vulnerabilities                      int   `json:"vulnerabilities"`
+		VulnerableComponents                 int   `json:"vulnerableComponents"`
+		Components                           int   `json:"components"`
 		Suppressed                           int   `json:"suppressed"`
 		FindingsTotal                        int   `json:"findingsTotal"`
 		FindingsAudited                      int   `json:"findingsAudited"`
@@ -60,18 +49,10 @@ type Components []struct {
 		FirstOccurrence                      int64 `json:"firstOccurrence"`
 		LastOccurrence                       int64 `json:"lastOccurrence"`
 	} `json:"metrics"`
-	UsedBy                int  `json:"usedBy"`
-	ExpandDependencyGraph bool `json:"expandDependencyGraph"`
-	IsInternal            bool `json:"isInternal"`
-	Supplier              struct {
-		Name string `json:"name"`
-	} `json:"supplier,omitempty"`
-	Version string `json:"version,omitempty"`
-	Cpe     string `json:"cpe,omitempty"`
 }
 
-func GetComponents(uri string, apikey string, project string) Components {
-	url := uri + "/api/v1/component/project/" + project + "?onlyOutdated=false&onlyDirect=false"
+func GetProjects(uri string, apikey string) Projects {
+	url := uri + "/api/v1/project/"
 
 	req, err := http.NewRequest(
 		http.MethodGet,
@@ -95,24 +76,14 @@ func GetComponents(uri string, apikey string, project string) Components {
 		log.Fatalf("error reading HTTP response body: %v", err)
 	}
 
-	comps := Components{}
+	comps := Projects{}
 	json.Unmarshal(responseBytes, &comps)
 
 	return comps
 }
 
-func GetComponent(name string, apikey string, components Components) []string {
-	uuids := make([]string,0)
-	for _, y := range components {
-		if strings.EqualFold(y.Name, name) {
-			uuids = append(uuids, y.UUID)
-		}
-	}
-	return uuids
-}
-
-func (components Components) ListComponents() {
-	for _, component := range components {
-		log.Printf("%-25s %s\n", component.Name, component.UUID)
+func (projects Projects) ListProjects() {
+	for _, project := range projects {
+		log.Printf("%-10s %s\n", project.Name, project.UUID)
 	}
 }
