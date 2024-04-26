@@ -5,6 +5,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"gheprivate.intra.corp/vss/cots-management/internal/constants"
 )
 
 type Projects []struct {
@@ -51,8 +52,8 @@ type Projects []struct {
 	} `json:"metrics"`
 }
 
-func GetProjects(uri string, apikey string) Projects {
-	url := uri + "/api/v1/project/"
+func GetProjects(flags constants.Flags) Projects {
+	url := flags.Uri + "/api/v1/project/"
 
 	req, err := http.NewRequest(
 		http.MethodGet,
@@ -64,7 +65,7 @@ func GetProjects(uri string, apikey string) Projects {
 	}
 
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("X-Api-Key", apikey)
+	req.Header.Add("X-Api-Key", flags.ApiKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -84,6 +85,6 @@ func GetProjects(uri string, apikey string) Projects {
 
 func (projects Projects) ListProjects() {
 	for _, project := range projects {
-		log.Printf("%-10s %s\n", project.Name, project.UUID)
+		log.Printf("%-25s %s\n", project.Name, project.UUID)
 	}
 }
