@@ -6,6 +6,8 @@ import (
 	"io"
 	"log"
 	"net/http"
+
+	"gheprivate.intra.corp/vss/cots-management/internal/constants"
 )
 
 type GetAnalysis struct {
@@ -33,8 +35,8 @@ type PutAnalysis struct {
 	AnalysisResponse      string `json:"analysisResponse,omitempty"`
 }
 
-func SaveAnalysis(uri string, apikey string, putAnalysis PutAnalysis) {
-	url := uri + "/api/v1/analysis"
+func SaveAnalysis(flags constants.Flags, putAnalysis PutAnalysis) {
+	url := flags.Uri + "/api/v1/analysis"
 
 	data, _ := json.Marshal(putAnalysis)
 
@@ -48,7 +50,7 @@ func SaveAnalysis(uri string, apikey string, putAnalysis PutAnalysis) {
 	}
 
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("X-Api-Key", apikey)
+	req.Header.Add("X-Api-Key", flags.ApiKey)
 	req.Header.Add("content-type", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
