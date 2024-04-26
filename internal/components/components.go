@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"gheprivate.intra.corp/vss/cots-management/internal/constants"
 )
 
 type Components []struct {
@@ -70,8 +72,8 @@ type Components []struct {
 	Cpe     string `json:"cpe,omitempty"`
 }
 
-func GetComponents(uri string, apikey string, project string) Components {
-	url := uri + "/api/v1/component/project/" + project + "?onlyOutdated=false&onlyDirect=false"
+func GetComponents(flags constants.Flags) Components {
+	url := flags.Uri + "/api/v1/component/project/" + flags.Project + "?onlyOutdated=false&onlyDirect=false"
 
 	req, err := http.NewRequest(
 		http.MethodGet,
@@ -83,7 +85,7 @@ func GetComponents(uri string, apikey string, project string) Components {
 	}
 
 	req.Header.Add("Accept", "application/json")
-	req.Header.Add("X-Api-Key", apikey)
+	req.Header.Add("X-Api-Key", flags.ApiKey)
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
@@ -101,10 +103,10 @@ func GetComponents(uri string, apikey string, project string) Components {
 	return comps
 }
 
-func GetComponent(name string, apikey string, components Components) []string {
+func GetComponent(flags constants.Flags, components Components) []string {
 	uuids := make([]string,0)
 	for _, y := range components {
-		if strings.EqualFold(y.Name, name) {
+		if strings.EqualFold(y.Name, flags.Component) {
 			uuids = append(uuids, y.UUID)
 		}
 	}
