@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"gheprivate.intra.corp/vss/cots-management/internal/constants"
+	"github.com/schmeister/cve/internal/constants"
 )
 
 type GetAnalysis struct {

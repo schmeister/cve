@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"strings"
 
-	"gheprivate.intra.corp/vss/cots-management/internal/constants"
+	"github.com/schmeister/cve/internal/constants"
 )
 
 type Components []struct {
@@ -104,7 +104,7 @@ func GetComponents(flags constants.Flags) Components {
 }
 
 func GetComponent(flags constants.Flags, components Components) []string {
-	uuids := make([]string,0)
+	uuids := make([]string, 0)
 	for _, y := range components {
 		if strings.EqualFold(y.Name, flags.Component) {
 			uuids = append(uuids, y.UUID)

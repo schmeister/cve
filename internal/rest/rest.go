@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"gheprivate.intra.corp/vss/cots-management/internal/bom"
+	"github.com/schmeister/cve/internal/bom"
 )
 
 func GetBOM(uri string, apiKey string, project string) bom.BOM {

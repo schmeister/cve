@@ -6,13 +6,12 @@ import (
 	"log"
 
 	"github.com/fatih/color"
-
-	"gheprivate.intra.corp/vss/cots-management/internal/analysis"
-	"gheprivate.intra.corp/vss/cots-management/internal/components"
-	"gheprivate.intra.corp/vss/cots-management/internal/constants"
-	"gheprivate.intra.corp/vss/cots-management/internal/project"
-	"gheprivate.intra.corp/vss/cots-management/internal/vulnerability"
-	"gheprivate.intra.corp/vss/cots-management/validate"
+	"github.com/schmeister/cve/internal/analysis"
+	"github.com/schmeister/cve/internal/components"
+	"github.com/schmeister/cve/internal/constants"
+	"github.com/schmeister/cve/internal/project"
+	"github.com/schmeister/cve/internal/vulnerability"
+	"github.com/schmeister/cve/validate"
 )
 
 // go run cmd/main.go -key="berkeley_db" -analysisState="NOT_AFFECTED" -analysisJustification="PROTECTED_AT_PERIMETER" -comment="my comment" -analysisDetails="Wednesday berkeley_db - 2" -suppressed=true

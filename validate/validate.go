@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"slices"
 
-	"gheprivate.intra.corp/vss/cots-management/internal/constants"
+	"github.com/schmeister/cve/internal/constants"
 )
 
 func ValidateFlags(flags constants.Flags) (bool, string) {
@@ -20,7 +20,7 @@ func ValidateFlags(flags constants.Flags) (bool, string) {
 		return false, "Invalid Justification"
 	}
 
-	if len(flags.Details) < 10 && len(flags.Comment)<10 {
+	if len(flags.Details) < 10 && len(flags.Comment) < 10 {
 		return false, "Invalid Details or Comments - either or both must have text of 10 characters longer"
 	}
 
