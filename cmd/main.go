@@ -16,9 +16,9 @@ import (
 
 // go run cmd/main.go -key="berkeley_db" -analysisState="NOT_AFFECTED" -analysisJustification="PROTECTED_AT_PERIMETER" -comment="my comment" -analysisDetails="Wednesday berkeley_db - 2" -suppressed=true
 
-var URI = "http://10.125.140.97:8081"
-var API_KEY = "odt_CnCius8VuTy6f7kxqEco7HAoIApQGxd2"
-var PROJECT_ID = "daa3585b-1013-4dcf-b8c6-9d32b00077ec" // GSS - ACP OS
+var URI = "http://localhost:8081"
+var API_KEY = "odt_9SzIIWOMDrMm8IYwjVqZX8IBW90ppCCU"
+var PROJECT_ID = "882a7f3c-6791-4f84-9fba-d3aafa40c037" // GSS - ACP OS
 // var COMPONENT = "120c69dd-7157-4d09-a2ca-72cf78ae1d6e"     // bash
 // var VULNERABILITY = "d93c63a4-7cea-4285-bbcc-767c0d7684fd" //CVE-2019-9924 (NVD)
 
