@@ -5,87 +5,132 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/schmeister/cve/internal/analysis"
-	"github.com/schmeister/cve/internal/components"
-	"github.com/schmeister/cve/internal/constants"
-	"github.com/schmeister/cve/internal/project"
-	"github.com/schmeister/cve/internal/vulnerability"
-	"github.com/schmeister/cve/validate"
+	"github.com/fatih/color"
+
+	"gheprivate.intra.corp/vss/cots-management/internal/analysis"
+	"gheprivate.intra.corp/vss/cots-management/internal/components"
+	"gheprivate.intra.corp/vss/cots-management/internal/constants"
+	"gheprivate.intra.corp/vss/cots-management/internal/project"
+	"gheprivate.intra.corp/vss/cots-management/internal/vulnerability"
+	"gheprivate.intra.corp/vss/cots-management/validate"
 )
 
 // go run cmd/main.go -key="berkeley_db" -analysisState="NOT_AFFECTED" -analysisJustification="PROTECTED_AT_PERIMETER" -comment="my comment" -analysisDetails="Wednesday berkeley_db - 2" -suppressed=true
 
-var URI = "http://localhost:8081"
-var API_KEY = "odt_9SzIIWOMDrMm8IYwjVqZX8IBW90ppCCU"
-var PROJECT_ID = "882a7f3c-6791-4f84-9fba-d3aafa40c037"
-var COMPONENT = "d37ef235-dc99-4a3b-9937-e9e4a6615e9f"     // berkley_db
-var VULNERABILITY = "d3ad8c72-1f98-4614-b1c4-745da7a88bc7" //CVE-2019-2708 (NVD)
+var URI = "http://10.125.140.97:8081"
+var API_KEY = "odt_CnCius8VuTy6f7kxqEco7HAoIApQGxd2"
+var PROJECT_ID = "daa3585b-1013-4dcf-b8c6-9d32b00077ec" // GSS - ACP OS
+// var COMPONENT = "120c69dd-7157-4d09-a2ca-72cf78ae1d6e"     // bash
+// var VULNERABILITY = "d93c63a4-7cea-4285-bbcc-767c0d7684fd" //CVE-2019-9924 (NVD)
 
 func main() {
+	sh := " (shorthand) "
+	var flags = constants.Flags{}
+
 	log.SetFlags(log.Lshortfile)
 
-	uriPtr := flag.String("uri", URI, "URI")
-	apiKeyPtr := flag.String("apikey", API_KEY, "X-Api-Key")
-	keyPtr := flag.String("key", "firefox", "Label to be searched")
+	flag.StringVar(&flags.Uri, "uri", URI, "URI of Dev-Track")
+	flag.StringVar(&flags.Uri, "U", URI, "URI of Dev-Track"+sh)
 
-	suppressedPtr := flag.Bool("suppressed", false, "Suppress the CVE")
-	analysisStatePtr := flag.String("analysisState", "NOT_AFFECTED", fmt.Sprintln(constants.States))
-	analysisJustificationPtr := flag.String("analysisJustification", "NOT_SET", fmt.Sprintln(constants.Justifications))
-	projectPtr := flag.String("project", PROJECT_ID, "")
-	commentPtr := flag.String("comment", "no comment", "comments")
-	analysisDetailsPtr := flag.String("analysisDetails", "no details", "Details")
+	flag.StringVar(&flags.ApiKey, "apikey", API_KEY, "X-Api-Key")
+	flag.StringVar(&flags.ApiKey, "AK", API_KEY, "X-Api-Key"+sh)
 
-	lpPtr := flag.Bool("listP", false, "List projects")
-	lcPtr := flag.Bool("listC", false, "List components for project")
-	lvPtr := flag.Bool("listV", false, "List vulnerabilities for project")
+	flag.StringVar(&flags.Component, "component", "", "Component to be searched")
+	flag.StringVar(&flags.Component, "CP", "", "Component to be searched"+sh)
+
+	//flag.BoolVar(&flags.Suppressed, "suppressed", false, "Suppress the CVE")
+	//flag.BoolVar(&flags.Suppressed, "S", false, "Suppress the CVE"+sh)
+
+	flag.StringVar(&flags.State, "analysisState", "", "Analysis State: "+fmt.Sprint(constants.States))
+	flag.StringVar(&flags.State, "AS", "", "Analysis State: "+sh+fmt.Sprint(constants.States))
+
+	flag.StringVar(&flags.Justification, "analysisJustification", "", "Analysis Justification: "+fmt.Sprintln(constants.Justifications))
+	flag.StringVar(&flags.Justification, "AJ", "", "Analysis Justification: "+sh+fmt.Sprintln(constants.Justifications))
+
+	flag.StringVar(&flags.Project, "projectID", PROJECT_ID, "Project Details --> Object Identifier UUID")
+	flag.StringVar(&flags.Project, "PID", PROJECT_ID, "Project Details --> Object Identifier UUID"+sh)
+
+	flag.StringVar(&flags.Comment, "comment", "", "comments")
+	flag.StringVar(&flags.Comment, "COM", "", "comments"+sh)
+
+	flag.StringVar(&flags.Details, "analysisDetails", "", "Details")
+	flag.StringVar(&flags.Details, "DET", "", "Details"+sh)
+
+	flag.BoolVar(&flags.LP, "listP", false, "List projects")
+	flag.BoolVar(&flags.LP, "LP", false, "List projects"+sh)
+
+	flag.BoolVar(&flags.LC, "listC", false, "List components for project")
+	flag.BoolVar(&flags.LC, "LC", false, "List components for project"+sh)
+
+	flag.BoolVar(&flags.LV, "listV", false, "List vulnerabilities for project")
+	flag.BoolVar(&flags.LV, "LV", false, "List vulnerabilities for project"+sh)
+
+	flag.BoolVar(&flags.SIM, "simulate", false, "Simulate update only - If true only displays what will be updated")
+	flag.BoolVar(&flags.SIM, "SIM", false, "Simulate update only - If true only displays what will be updated"+sh)
+
+	flag.BoolVar(&flags.IS, "includesuppressed", false, "Include Supressed vulnerabilities - If false only non-suppressed vulnerabilities be included")
+	flag.BoolVar(&flags.IS, "IS", false, "Include Supressed vulnerabilities - If false only non-suppressed vulnerabilities be included"+sh)
 
 	flag.Parse()
 
-	valid := validate.ValidateFlags(analysisStatePtr, analysisJustificationPtr)
-	if !valid {
-		flag.PrintDefaults()
-	} else if *lpPtr {
-		projects := project.GetProjects(*uriPtr, *apiKeyPtr)
+	valid, vstr := validate.ValidateFlags(flags)
+
+	if flags.LP { // List Projects
+		projects := project.GetProjects(flags)
 		projects.ListProjects()
-	} else if *lcPtr {
-		components := components.GetComponents(*uriPtr, *apiKeyPtr, *projectPtr)
+	} else if flags.LC { // List Components
+		components := components.GetComponents(flags)
 		components.ListComponents()
-	} else if *lvPtr {
-		vulnerabilities := vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "project", *projectPtr, 1)
-		vulnerabilities.ListVulnerabilities()
-//		vulnerabilities = vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "component", *componentPtr, 1)
-//		vulnerabilities.ListVulnerabilities()
+	} else if flags.LV { // List Vulnerabilities
+		v, res := validate.ValidateUUID(flags.Project)
+		if !v {
+			color.Set(color.FgYellow)
+			log.Println(res)
+			color.Unset()
+		} else {
+			vulnerabilities := vulnerability.GetVulnerabilities(flags, "project", flags.Project, 1)
+			vulnerabilities.ListVulnerabilities()
+			log.Println(len(vulnerabilities))
+		}
+	} else if !valid { // if not valid so far, print help.
+		color.Set(color.FgYellow)
+		log.Println(vstr)
+		color.Unset()
+
+		flag.PrintDefaults()
 	} else {
-		comps := components.GetComponents(*uriPtr, *apiKeyPtr, *projectPtr)
-		uuids := components.GetComponent(*keyPtr, *apiKeyPtr, comps)
+		comps := components.GetComponents(flags)
+		uuids := components.GetComponent(flags, comps)
 		log.Printf("# Components: %d %s\n", len(uuids), uuids)
 		for _, uuid := range uuids {
 			page := 1
-			vuls := vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "component", uuid, page)
-			for len(vuls) > 0 {
-				log.Printf("# Vulnerabilities: %d\n", len(vuls))
-				for idx, y := range vuls {
-					log.Printf("%3d %-14s %s\n", idx+1, y.VulnID, y.UUID)
-					if true {
-						an := analysis.PutAnalysis{
-							Project:               *projectPtr,
-							Component:             uuid,
-							Vulnerability:         y.UUID,
-							AnalysisState:         *analysisStatePtr,
-							AnalysisJustification: *analysisJustificationPtr,
-							AnalysisResponse:      "CAN_NOT_FIX",
-							Suppressed:            *suppressedPtr,
-							IsSuppressed:          false,
-							Comment:               *commentPtr,
-							AnalysisDetails:       *analysisDetailsPtr,
-						}
-						analysis.SaveAnalysis(*uriPtr, *apiKeyPtr, an)
-					}
+			vuls := vulnerability.GetAllVulnerabilities(flags, "component", uuid)
+			for idx2, y := range vuls {
+				if flags.State == "NOT_SET" || flags.State == "IN_TRIAGE" {
+					flags.Suppressed = false
+				} else {
+					flags.Suppressed = true
 				}
 
-				page++
-				vuls = vulnerability.GetVulnerabilities(*uriPtr, *apiKeyPtr, "component", uuid, page)
+				an := analysis.PutAnalysis{
+					Project:               flags.Project,
+					Component:             uuid,
+					Vulnerability:         y.UUID,
+					AnalysisState:         flags.State,
+					AnalysisJustification: flags.Justification,
+					AnalysisResponse:      "CAN_NOT_FIX",
+					Suppressed:            flags.Suppressed,
+					IsSuppressed:          false,
+					Comment:               flags.Comment,
+					AnalysisDetails:       flags.Details,
+				}
+				if !flags.SIM {
+					analysis.SaveAnalysis(flags, an)
+				}
+				num := ((page - 1) * 100) + idx2 + 1
+				log.Printf("Vul: %4d %s %s %s %s \"%s\" \"%s\" \n", num, an.Project, an.Component, an.Vulnerability, an.AnalysisState, an.Comment, an.AnalysisDetails)
 			}
+			log.Println(len(vuls))
 		}
 	}
 }
