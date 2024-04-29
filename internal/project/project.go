@@ -89,7 +89,10 @@ func GetProjects(flags constants.Flags) Projects {
 func (projects Projects) ListProjects() []string {
 	s := make([]string, 0)
 	for _, project := range projects {
-		log.Printf("%-25s %s\n", project.Name, project.UUID)
+		remaining :=project.Metrics.Suppressed
+		total := project.Metrics.FindingsTotal+project.Metrics.Suppressed
+		percent := float64(remaining)/float64(total)
+		log.Printf("%-25s %s {%-.2f%% (%d/%d)}\n", project.Name, project.UUID, percent, remaining, total)
 		s = append(s, project.Name)
 	}
 	return s
