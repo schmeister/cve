@@ -2,6 +2,7 @@ package components
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -10,7 +11,9 @@ import (
 	"github.com/schmeister/cve/internal/constants"
 )
 
-type Components []struct {
+type Components []Component
+
+type Component struct {
 	Name               string `json:"name"`
 	Classifier         string `json:"classifier"`
 	DirectDependencies string `json:"directDependencies,omitempty"`
@@ -73,34 +76,51 @@ type Components []struct {
 }
 
 func GetComponents(flags constants.Flags) Components {
-	url := flags.Uri + "/api/v1/component/project/" + flags.Project + "?onlyOutdated=false&onlyDirect=false"
+	page := 1
+	pageSize := 100
+	components := Components{}
+	hasMore := true
 
-	req, err := http.NewRequest(
-		http.MethodGet,
-		url,
-		nil,
-	)
-	if err != nil {
-		log.Fatalf("error creating HTTP request: %v", err)
+	for hasMore {
+		pageNum := fmt.Sprint(page)
+		pageS := fmt.Sprintf("%d", pageSize)
+
+		url := flags.Uri + "/api/v1/component/project/" +
+			flags.Project + "?onlyOutdated=false&onlyDirect=false" +
+			"&pageNumber=" + pageNum + "&pageSize=" + pageS
+
+		req, err := http.NewRequest(
+			http.MethodGet,
+			url,
+			nil,
+		)
+		if err != nil {
+			log.Fatalf("error creating HTTP request: %v", err)
+		}
+
+		req.Header.Add("Accept", "application/json")
+		req.Header.Add("X-Api-Key", flags.ApiKey)
+
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Fatalf("error sending HTTP request: %v", err)
+		}
+
+		responseBytes, err := io.ReadAll(res.Body)
+		if err != nil {
+			log.Fatalf("error reading HTTP response body: %v", err)
+		}
+
+		comps := Components{}
+		json.Unmarshal(responseBytes, &comps)
+		components = append(components, comps...)
+
+		if len(comps) < pageSize {
+			return components
+		}
+		page++
 	}
-
-	req.Header.Add("Accept", "application/json")
-	req.Header.Add("X-Api-Key", flags.ApiKey)
-
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		log.Fatalf("error sending HTTP request: %v", err)
-	}
-
-	responseBytes, err := io.ReadAll(res.Body)
-	if err != nil {
-		log.Fatalf("error reading HTTP response body: %v", err)
-	}
-
-	comps := Components{}
-	json.Unmarshal(responseBytes, &comps)
-
-	return comps
+	return components
 }
 
 func GetComponent(flags constants.Flags, components Components) []string {
@@ -117,4 +137,5 @@ func (components Components) ListComponents() {
 	for _, component := range components {
 		log.Printf("%-25s %s\n", component.Name, component.UUID)
 	}
+	log.Println(len(components))
 }
