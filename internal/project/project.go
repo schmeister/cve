@@ -9,7 +9,9 @@ import (
 	"github.com/schmeister/cve/internal/constants"
 )
 
-type Projects []struct {
+type Projects []Project
+
+type Project struct {
 	Name                   string `json:"name"`
 	Version                string `json:"version"`
 	Classifier             string `json:"classifier"`
@@ -78,14 +80,26 @@ func GetProjects(flags constants.Flags) Projects {
 		log.Fatalf("error reading HTTP response body: %v", err)
 	}
 
-	comps := Projects{}
+	comps := []Project{}
 	json.Unmarshal(responseBytes, &comps)
 
 	return comps
 }
 
-func (projects Projects) ListProjects() {
+func (projects Projects) ListProjects() []string {
+	s := make([]string, 0)
 	for _, project := range projects {
 		log.Printf("%-25s %s\n", project.Name, project.UUID)
+		s = append(s, project.Name)
 	}
+	return s
+}
+
+func (projects Projects) GetProject(name string) Project {
+	for _, project := range projects {
+		if project.Name==name{
+			return project
+		}
+	}
+	return Project{}
 }
