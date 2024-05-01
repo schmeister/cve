@@ -23,6 +23,7 @@ type Flags struct {
 	SIM           bool
 	IS            bool
 	REP           bool
+	FILE          string
 }
 
 //var Parameters = []string{"suppressed", "analysisState", "analysisJustification", "project", "vulnerability", "component", "isSuppressed", "comment", "analysisDetails", "analysisResponse"}
