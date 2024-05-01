@@ -35,7 +35,7 @@ func Get(flags constants.Flags) Analysis {
 			analysis := analysis.Get(flags)
 			key := cName + "-" + vID
 
-			an := fmt.Sprintf("%-5s, %-15s, %-15s, %-15s, %-15s, \"%s\"",
+			an := fmt.Sprintf("%-10s, %-11s, %-14s, %-13s, %-22s, \"%s\"",
 				project.Name, cName, vID,
 				analysis.AnalysisState,
 				analysis.AnalysisJustification,
@@ -55,7 +55,7 @@ func (analysis Analysis) Print(){
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		log.Printf("[%s] %s", k, analysis[k])
+		log.Printf("[%23s] %s", k, analysis[k])
 	}
 }
 
@@ -72,12 +72,11 @@ func (analysis Analysis) Save(flags constants.Flags){
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		w.WriteString(fmt.Sprintf("%s, %s\n", k, analysis[k]))
+		w.WriteString(fmt.Sprintf("%s\n", analysis[k]))
 	}
 	w.Flush()
 }
 
-	
 func check(e error) {
     if e != nil {
         panic(e)
