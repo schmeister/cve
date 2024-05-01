@@ -35,7 +35,7 @@ type PutAnalysis struct {
 	AnalysisResponse      string `json:"analysisResponse,omitempty"`
 }
 
-func SaveAnalysis(flags constants.Flags, putAnalysis PutAnalysis) {
+func Save(flags constants.Flags, putAnalysis PutAnalysis) {
 	url := flags.Uri + "/api/v1/analysis"
 
 	data, _ := json.Marshal(putAnalysis)
@@ -65,4 +65,38 @@ func SaveAnalysis(flags constants.Flags, putAnalysis PutAnalysis) {
 
 	newG := GetAnalysis{}
 	json.Unmarshal(responseBytes, &newG)
+}
+
+func Get(flags constants.Flags) GetAnalysis {
+	url := flags.Uri + "/api/v1/analysis?" +
+		"project=" + flags.Project + "&" +
+		"component=" + flags.Component + "&" +
+		"vulnerability=" + flags.Vulnerability
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		url,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("error creating HTTP request: %v", err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("X-Api-Key", flags.ApiKey)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalf("error sending HTTP request: %v", err)
+	}
+
+	responseBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatalf("error reading HTTP response body: %v", err)
+	}
+
+	analysis := GetAnalysis{}
+	json.Unmarshal(responseBytes, &analysis)
+
+	return analysis
 }

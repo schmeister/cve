@@ -15,14 +15,15 @@ type Flags struct {
 	Justification string
 	Project       string
 	Comment       string
-	Details        string
+	Details       string
+	Vulnerability string
 	LP            bool
 	LC            bool
 	LV            bool
 	SIM           bool
 	IS            bool
+	REP           bool
 }
-
 
 //var Parameters = []string{"suppressed", "analysisState", "analysisJustification", "project", "vulnerability", "component", "isSuppressed", "comment", "analysisDetails", "analysisResponse"}
 //var Vendors = []string{"ROLLBACK", "NOT_SET", "WORKAROUND_AVAILABLE", "UPDATE", "CAN_NOT_FIX", "WILL_NOT_FIX"}

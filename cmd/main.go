@@ -4,11 +4,13 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"sort"
 
 	"github.com/fatih/color"
 	"github.com/schmeister/cve/internal/analysis"
 	"github.com/schmeister/cve/internal/components"
 	"github.com/schmeister/cve/internal/constants"
+	"github.com/schmeister/cve/internal/finding"
 	"github.com/schmeister/cve/internal/project"
 	"github.com/schmeister/cve/internal/vulnerability"
 	"github.com/schmeister/cve/validate"
@@ -70,6 +72,8 @@ func main() {
 	flag.BoolVar(&flags.IS, "includesuppressed", false, "Include Supressed vulnerabilities - If false only non-suppressed vulnerabilities be included")
 	flag.BoolVar(&flags.IS, "IS", false, "Include Supressed vulnerabilities - If false only non-suppressed vulnerabilities be included"+sh)
 
+	flag.BoolVar(&flags.REP, "REP", false, "Create report for Project")
+
 	flag.Parse()
 
 	valid, vstr := validate.ValidateFlags(flags)
@@ -80,6 +84,49 @@ func main() {
 	} else if flags.LC { // List Components
 		components := components.GetComponents(flags)
 		components.ListComponents()
+	} else if flags.REP { // Create report
+		analysisMap := make(map[string]string)
+
+		// /api/v1/finding/project/<UUID>?suppressed=true
+		findings := finding.GetFindings(flags)
+		//		log.Println(len(findings))
+		project := project.GetProject(flags)
+
+		for _, y := range findings {
+			//pID := y.Component.Project
+
+			cUUID := y.Component.UUID
+			cName := y.Component.Name
+
+			vUUID := y.Vulnerability.UUID
+			vID := y.Vulnerability.VulnID
+
+			if y.Analysis.State != nil {
+				// log.Println(project.Name, pID, cName, cUUID, vID, vUUID, *y.Analysis.State)
+				flags.Component = cUUID
+				flags.Vulnerability = vUUID
+				analysis := analysis.Get(flags)
+				key := cName + "-" + vID
+
+				an := fmt.Sprintf("%-5s, %-15s, %-15s, %-15s, %-15s, \"%s\"",
+				project.Name, cName, vID,
+				analysis.AnalysisState,
+				analysis.AnalysisJustification,
+				analysis.AnalysisDetails)
+
+				analysisMap[key] = an
+			}
+		}
+		keys := make([]string, 0, len(analysisMap))
+		for k := range analysisMap{
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+	
+		for _, k := range keys {
+			log.Printf("[%s] %s",k, analysisMap[k])
+		}
+
 	} else if flags.LV { // List Vulnerabilities
 		v, res := validate.ValidateUUID(flags.Project)
 		if !v {
@@ -124,7 +171,7 @@ func main() {
 					AnalysisDetails:       flags.Details,
 				}
 				if !flags.SIM {
-					analysis.SaveAnalysis(flags, an)
+					analysis.Save(flags, an)
 				}
 				num := ((page - 1) * 100) + idx2 + 1
 				log.Printf("Vul: %4d %s %s %s %s \"%s\" \"%s\" \n", num, an.Project, an.Component, an.Vulnerability, an.AnalysisState, an.Comment, an.AnalysisDetails)

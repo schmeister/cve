@@ -86,6 +86,37 @@ func GetProjects(flags constants.Flags) Projects {
 	return comps
 }
 
+func GetProject(flags constants.Flags) Project {
+	url := flags.Uri + "/api/v1/project/" + flags.Project
+
+	req, err := http.NewRequest(
+		http.MethodGet,
+		url,
+		nil,
+	)
+	if err != nil {
+		log.Fatalf("error creating HTTP request: %v", err)
+	}
+
+	req.Header.Add("Accept", "application/json")
+	req.Header.Add("X-Api-Key", flags.ApiKey)
+
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Fatalf("error sending HTTP request: %v", err)
+	}
+
+	responseBytes, err := io.ReadAll(res.Body)
+	if err != nil {
+		log.Fatalf("error reading HTTP response body: %v", err)
+	}
+
+	project := Project{}
+	json.Unmarshal(responseBytes, &project)
+
+	return project
+}
+
 func (projects Projects) ListProjects() []string {
 	s := make([]string, 0)
 	for _, project := range projects {
