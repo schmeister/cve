@@ -7,6 +7,7 @@ var States = []string{"NOT_AFFECTED", "FALSE_POSITIVE", "NOT_SET", "RESOLVED", "
 var Justifications = []string{"REQUIRES_ENVIRONMENT", "REQUIRES_CONFIGURATION", "NOT_SET", "REQUIRES_DEPENDENCY", "CODE_NOT_PRESENT", "PROTECTED_BY_MITIGATING_CONTROL", "CODE_NOT_REACHABLE", "PROTECTED_AT_PERIMETER", "PROTECTED_BY_COMPILER", "PROTECTED_AT_RUNTIME"}
 
 type Flags struct {
+	Help          bool
 	Uri           string
 	ApiKey        string
 	Component     string
@@ -23,7 +24,7 @@ type Flags struct {
 	SIM           bool
 	IS            bool
 	REP           bool
-	FILE          string
+	OUT           string
 }
 
 //var Parameters = []string{"suppressed", "analysisState", "analysisJustification", "project", "vulnerability", "component", "isSuppressed", "comment", "analysisDetails", "analysisResponse"}
