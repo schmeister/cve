@@ -33,10 +33,11 @@ func Get(flags constants.Flags) Analysis {
 			flags.Component = cUUID
 			flags.Vulnerability = vUUID
 			analysis := analysis.Get(flags)
-			key := cName + "-" + vID
+			key := cName + "-" + y.Component.Version + "-" + vID
+			component := fmt.Sprintf("%s-%s", cName, y.Component.Version)
 
-			an := fmt.Sprintf("%-10s, %-11s, %-14s, %-13s, %-22s, \"%s\"",
-				project.Name, cName, vID,
+			an := fmt.Sprintf("%-10s, %-20s, %-14s, %-13s, %-22s, \"%s\"",
+				project.Name, component, vID,
 				analysis.AnalysisState,
 				analysis.AnalysisJustification,
 				analysis.AnalysisDetails)
@@ -47,7 +48,7 @@ func Get(flags constants.Flags) Analysis {
 	return analysisMap
 }
 
-func (analysis Analysis) Print(){
+func (analysis Analysis) Print() {
 	keys := make([]string, 0, len(analysis))
 	for k := range analysis {
 		keys = append(keys, k)
@@ -59,11 +60,11 @@ func (analysis Analysis) Print(){
 	}
 }
 
-func (analysis Analysis) Save(flags constants.Flags){
-	f, err := os.Create(flags.FILE)
+func (analysis Analysis) Save(flags constants.Flags) {
+	f, err := os.Create(flags.OUT)
 	check(err)
 	defer f.Close()
-	
+
 	w := bufio.NewWriter(f)
 	keys := make([]string, 0, len(analysis))
 	for k := range analysis {
@@ -78,7 +79,7 @@ func (analysis Analysis) Save(flags constants.Flags){
 }
 
 func check(e error) {
-    if e != nil {
-        panic(e)
-    }
+	if e != nil {
+		panic(e)
+	}
 }
