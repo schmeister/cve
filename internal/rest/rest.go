@@ -9,6 +9,7 @@ import (
 	"github.com/schmeister/cve/internal/bom"
 )
 
+
 func GetBOM(uri string, apiKey string, project string) bom.BOM {
 	url := uri + "/api/v1/bom/cyclonedx/project/" + project + "?download=false"
 
