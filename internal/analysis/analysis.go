@@ -10,6 +10,8 @@ import (
 	"github.com/schmeister/cve/internal/constants"
 )
 
+type Analysis []GetAnalysis
+
 type GetAnalysis struct {
 	AnalysisState         string `json:"analysisState"`
 	AnalysisJustification string `json:"analysisJustification"`
@@ -35,7 +37,7 @@ type PutAnalysis struct {
 	AnalysisResponse      string `json:"analysisResponse,omitempty"`
 }
 
-func Save(flags constants.Flags, putAnalysis PutAnalysis) {
+func (putAnalysis PutAnalysis) Save(flags constants.Flags) {
 	url := flags.Uri + "/api/v1/analysis"
 
 	data, _ := json.Marshal(putAnalysis)
